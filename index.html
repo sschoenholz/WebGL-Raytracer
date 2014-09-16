@@ -317,10 +317,12 @@
 				glCanvas.enable(glCanvas.DEPTH_TEST);
 				glCanvas.depthFunc(glCanvas.LEQUAL);
 				glCanvas.clear(glCanvas.COLOR_BUFFER_BIT|glCanvas.DEPTH_BUFFER_BIT);
-						
+					
+				//Initialize the ray tracer
 				raytracer = new Raytracer(glCanvas);
 				raytracer.build();
 				
+				//Add geometry to the scene
 				raytracer.objects.push(new Sphere());
 				raytracer.objects[0].position = [0.0,1.01,0.0,1.0];
 				raytracer.objects[0].material = [0.2,1.0,0.2,0.75];
@@ -359,6 +361,7 @@
 				raytracer.lights[1].position = [0.0,6.0,2.0,0.0];
 				raytracer.lights[1].material = [1.0,1.0,1.0,1.0];
 				
+				//build the geometry
 				raytracer.buildObjects();
 				raytracer.buildLights();
 			}
@@ -374,17 +377,21 @@
 
 		//function to draw to the world
 		function draw() {
-			if(glCanvas){	
+			if(glCanvas){
+				//draw the world
 				glCanvas.viewport(0.0,0.0,glCanvas.viewportWidth,glCanvas.viewportHeight);
 
 				glCanvas.clear(glCanvas.COLOR_BUFFER_BIT|glCanvas.DEPTH_BUFFER_BIT);
-							
+				
+				//update the object positions
 				time = new Date().getTime();
 				raytracer.objects[0].position = [0.0,2.0+Math.sin(0.1*time/1000),0.0,1.0];
 				raytracer.objects[1].position = [2.0*Math.cos(time/1000.0),2.0+Math.sin(time/1000),2.0*Math.sin(time/1000.0),0.4];
 				raytracer.objects[2].position = [-2.0*Math.cos(time/1000.0),2.0+Math.sin(time/1000),-2.0*Math.sin(time/1000.0),0.4];
 				raytracer.objects[3].position = [2.0*Math.sin(time/1000.0),2.0+Math.sin(time/1000),-2.0*Math.cos(time/1000.0),0.4];
 				raytracer.objects[4].position = [-2.0*Math.sin(time/1000.0),2.0+Math.sin(time/1000),2.0*Math.cos(time/1000.0),0.4];
+				
+				//rebuild and draw the scene
 				raytracer.buildObjects();
 				raytracer.draw();
 			}
