@@ -3,9 +3,11 @@ function Raytracer(glCanvas) {
 	this.objects = [];
 	this.lights = [];
 	
+	//setup the buffers that we will use
 	this.build = function() {
 		if(!(this.hasOwnProperty("vertexBuffer")))
 		{
+			
 			this.vertexBuffer = this.glCanvas.createBuffer();
 			this.vertexBuffer.itemSize = 2;
 			this.vertexBuffer.numItems = 4;
@@ -29,11 +31,13 @@ function Raytracer(glCanvas) {
 		this.glCanvas.bufferData(glCanvas.ARRAY_BUFFER,new Float32Array(vertices),glCanvas.STATIC_DRAW);
 	}
 	
+	//build all of the objects
 	this.buildScene = function () {
 		this.buildObjects();
 		this.buildDefinitions();
 	}
 	
+	//builds the objects aka pack them into textures
 	this.buildObjects = function () {
 		//assemble the two objects
 		objectList = [];
@@ -41,6 +45,7 @@ function Raytracer(glCanvas) {
 		objectMaterials = [];
 		objectMaterialsExtended = [];
 		
+		//go through each object and create lists of the type, the position and size, the material, and extended material properties
 		for(i = 0 ; i < this.objects.length ; i++)
 		{
 			objectList = objectList.concat([i,this.objects[i].type,0,0]);
@@ -49,9 +54,9 @@ function Raytracer(glCanvas) {
 			objectMaterialsExtended = objectMaterialsExtended.concat(this.objects[i].materialExtended);
 		}
 
-		//sizeList = Math.ceil(Math.sqrt(this.objects.length));
+		//determine the minimum power of two texture size that we need to store this information
 		sizeList = Math.pow(2.0,Math.ceil(Math.log(this.objects.length)/(2.0*Math.log(2.0))));
-				
+			
 		//fill the rest with zeros
 		for(i = 0 ; i < sizeList*sizeList - this.objects.length ; i++)
 		{
@@ -60,12 +65,14 @@ function Raytracer(glCanvas) {
 			objectMaterials = objectMaterials.concat([0.0,0.0,0.0,0.0]);
 			objectMaterialsExtended = objectMaterialsExtended.concat([0.0,0.0,0.0,0.0]);
 		}
-				
+		
+		//create arrays that we can link to the gpu
 		dataList = new Uint8Array(objectList);
 		dataPositions = new Float32Array(objectPositions);
 		dataMaterials = new Float32Array(objectMaterials);
 		dataMaterialsExtended = new Float32Array(objectMaterialsExtended);
-    	    	
+    	
+    	//create and bind the textures
     	glCanvas.bindTexture(glCanvas.TEXTURE_2D, this.objectsTexture);
     	glCanvas.texImage2D(glCanvas.TEXTURE_2D, 0, glCanvas.RGBA, sizeList, sizeList, 0, glCanvas.RGBA, glCanvas.UNSIGNED_BYTE, dataList);
     	glCanvas.texParameteri(glCanvas.TEXTURE_2D, glCanvas.TEXTURE_MAG_FILTER, glCanvas.NEAREST);
@@ -91,6 +98,7 @@ function Raytracer(glCanvas) {
     	glCanvas.bindTexture(glCanvas.TEXTURE_2D,null);
 	}
 	
+	//similar to build objects but for lighting
 	this.buildLights = function () {
 		//assemble the two objects
 		lightList = [];
@@ -103,7 +111,6 @@ function Raytracer(glCanvas) {
 		}
 		
 		sizeList = Math.pow(2.0,Math.ceil(Math.log(this.lights.length)/(2.0*Math.log(2.0))));
-		//sizeList = Math.ceil(Math.sqrt(this.lights.length));
 		
 		//fill the rest with zeros
 		for(i = 0 ; i < sizeList*sizeList - this.lights.length ; i++)
@@ -130,6 +137,8 @@ function Raytracer(glCanvas) {
     	glCanvas.bindTexture(glCanvas.TEXTURE_2D,null);
 	}
 	
+	//draw the geometry. This amounts to binding all of the textures and settings the uniforms that say how many objects we have,
+	//the size of the texture that we're sending to the gpu etc...
 	this.draw = function () {
 		glCanvas.bindBuffer(glCanvas.ARRAY_BUFFER,this.vertexBuffer);
 		glCanvas.vertexAttribPointer(glCanvas.shaderProgram.vertexPositionAttribute,this.vertexBuffer.itemSize,glCanvas.FLOAT,false,0,0);
@@ -169,6 +178,7 @@ function Raytracer(glCanvas) {
 	return this;
 }
 
+//definition for a sphere
 function Sphere() {
 	this.type = 0;
 	this.position = [0.0,0.0,0.0,1.0];
@@ -178,6 +188,7 @@ function Sphere() {
 	return this;
 }
 
+//definition for a plane
 function Plane() {
 	this.type = 1;
 	this.position = [0.0,1.0,0.0,0.0];
@@ -187,6 +198,7 @@ function Plane() {
 	return this;
 }
 
+//definition for a light
 function Light() {
 	this.position = [0.0,0.0,0.0,0.0];
 	this.material = [1.0,1.0,1.0,1.0];
