@@ -2,6 +2,7 @@ function Raytracer(glCanvas) {
 	this.glCanvas = glCanvas;
 	this.objects = [];
 	this.lights = [];
+	this.antiAliasing = 1;
 	
 	//setup the buffers that we will use
 	this.build = function() {
@@ -169,6 +170,7 @@ function Raytracer(glCanvas) {
     	
     	glCanvas.uniform1i(glCanvas.shaderProgram.numObjects,this.objects.length);
     	glCanvas.uniform1i(glCanvas.shaderProgram.numLights,this.lights.length);
+    	glCanvas.uniform1i(glCanvas.shaderProgram.antiAliasing,this.antiAliasing);
     	glCanvas.uniform1f(glCanvas.shaderProgram.objectTextureSize,Math.pow(2.0,Math.ceil(Math.log(this.objects.length)/(2.0*Math.log(2.0)))));
     	glCanvas.uniform1f(glCanvas.shaderProgram.lightTextureSize,Math.pow(2.0,Math.ceil(Math.log(this.lights.length)/(2.0*Math.log(2.0)))));
 		

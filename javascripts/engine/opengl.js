@@ -96,6 +96,8 @@ function InitializeShaders(glCanvas)
 	glCanvas.shaderProgram.numLights = gl.getUniformLocation(glCanvas.shaderProgram,"numLights");
 	glCanvas.shaderProgram.objectTextureSize = gl.getUniformLocation(glCanvas.shaderProgram,"objectTextureSize");
 	glCanvas.shaderProgram.lightTextureSize = gl.getUniformLocation(glCanvas.shaderProgram,"lightTextureSize");
+	glCanvas.shaderProgram.antiAliasing = gl.getUniformLocation(glCanvas.shaderProgram,"antiAliasing");
+
 		
 	InitializeResources(glCanvas);
 }
