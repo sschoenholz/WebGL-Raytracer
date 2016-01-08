@@ -26,3 +26,7 @@ Then in the render loop simply call
 raytracer.draw();
 ```
 If you move any objects in realtime raytracer.buildObjects() must be called to update the scene on the GPU.
+
+Here is a gif of the raytracer in action,
+
+![](https://samschoenholz.files.wordpress.com/2015/10/raytracer.gif)
